@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #define MAXCHAR 255
-#define MIXCHAR 0
+#define MINCHAR 0
 #define ERROR -1
-typedef struct turing MT;
+
 typedef struct turing {
     int key;
-    MT *left, *right;
+    struct turing *left, *right;
 } MT;
+
 int inc(MT *node);
 int dec(MT *node);
 
@@ -20,64 +21,6 @@ void clearMemory(MT **node);
 void clearLeft(MT **node);
 void clearRight(MT **node);
 
-int main(int argc, const char * argv[]) {
-
-
-    MT *root = malloc(sizeof(MT));
-    if (!root) {
-        fprintf(stderr ,"Out of memory. Can't perform malloc\n");
-        return ERROR;
-    }
-    int i;
-    root->key = 0;
-    root->left = root->right = NULL;
-
-    FILE *file;
-    file=fopen(argv[1],"r");
-    char str[256];
-    if(file == NULL)
-    {
-        printf("Can't find the file!");
-        return -1;
-    }
-    else
-    {
-        while(!feof(file))
-        {
-            fgets(str, 256, file);
-
-            for(i = 0; (str[i] != '\n') && ((str[i] < 'a') || (str[i] > 'z')); i++)
-                ;
-            if (str[i] == 'i')
-            {
-                inc(root);
-            }
-            else if (str[i] == 'd')
-            {
-                dec(root);
-            }
-            else if (str[i] == 'p')
-            {
-                print(root);
-            }
-            else if (str[i] == 'g')
-            {
-                get(root);
-            }
-            else if (str[i+3] == 'l')
-            {
-                movl(&root);
-            }
-            else if (str[i+3] == 'r')
-            {
-                movr(&root);
-            }
-        }
-    }
-    fclose(file);
-    clearMemory(&root);
-    return 0;
-}
 
 int inc(MT *node) {
     if (node->key == MAXCHAR) {
@@ -91,7 +34,7 @@ int inc(MT *node) {
 }
 
 int dec(MT *node) {
-    if (node->key == MIXCHAR) {
+    if (node->key == MINCHAR) {
         fprintf(stderr, "Out of range");
         return ERROR;
     }
@@ -170,4 +113,64 @@ void clearRight(MT **node) {
         clearRight(&(*node)->right);
     }
     free(*node);
+}
+
+int main(int argc, const char * argv[]) {
+
+
+    MT *root = malloc(sizeof(MT));
+    if (!root) {
+        fprintf(stderr ,"Out of memory. Can't perform malloc\n");
+        return ERROR;
+    }
+    int i;
+    root->key = 0;
+    root->left = NULL;
+    root->right = NULL;
+
+    FILE *file;
+    file=fopen(argv[1],"r");
+    char str[256];
+    if(file == NULL)
+    {
+        printf("Can't find the file!");
+        return -1;
+    }
+    else
+    {
+        while(!feof(file))
+        {
+            fgets(str, 256, file);
+
+            for(i = 0; (str[i] != '\n') && ((str[i] < 'a') || (str[i] > 'z')); i++)
+                ;
+            if (str[i] == 'i')
+            {
+                inc(root);
+            }
+            else if (str[i] == 'd')
+            {
+                dec(root);
+            }
+            else if (str[i] == 'p')
+            {
+                print(root);
+            }
+            else if (str[i] == 'g')
+            {
+                get(root);
+            }
+            else if (str[i+3] == 'l')
+            {
+                movl(&root);
+            }
+            else if (str[i+3] == 'r')
+            {
+                movr(&root);
+            }
+        }
+    }
+    fclose(file);
+    clearMemory(&root);
+    return 0;
 }

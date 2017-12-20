@@ -4,14 +4,17 @@
 #define MINCHAR 0
 #define ERROR -1
 
+/*The structure that allows for "infinite" tape*/
 typedef struct turing {
     int key;
     struct turing *left, *right;
 } MT;
 
+/*Each team MT its function*/
 int inc(MT *node);
 int dec(MT *node);
 
+/*Double pointer is necessary in order to change the pointer value*/
 int movl(MT **node);
 int movr(MT **node);
 void print(MT *node);
@@ -51,7 +54,10 @@ int movl(MT **node) {
             fprintf(stderr ,"Out of memory. Can't perform malloc\n");
             return ERROR;
         }
-
+        
+        /*It is necessary to associate the new item with the old.
+        Should be the link to the new from the old, the old from the new.
+        The link to the new from the old is made when allocating memory in the line.*/
         (*node)->left->right = (*node);
         (*node) = (*node)->left;
         (*node)->left = NULL;
@@ -91,6 +97,12 @@ void get(MT *node) {
     scanf("%d", &(node->key));
 }
 
+/*A function that triggers the memory.
+Powered by means of two recursive functions.
+First is in the left-most element, removes it, and returns to the previous one.removes it, etc.
+Then goes to the right edge and does the same thing.
+Ends up on the element on which the source pointer.
+After the two recursive functions, remains only 1 element.*/
 void clearMemory(MT **node) {
     if ((*node)->left) {
         clearLeft(&(*node)->left);
@@ -98,6 +110,7 @@ void clearMemory(MT **node) {
     if ((*node)->right) {
         clearRight(&(*node)->right);
     }
+    /*Frees the memory from the last element*/
     free(*node);
 }
 
@@ -119,15 +132,18 @@ int main(int argc, const char * argv[]) {
 
 
     MT *root = malloc(sizeof(MT));
+    /*Malloc returns NULL if not Udaloy to allocate memory*/
     if (!root) {
         fprintf(stderr ,"Out of memory. Can't perform malloc\n");
         return ERROR;
     }
+    /*Need to set initial values of variables*/
     int i;
     root->key = 0;
     root->left = NULL;
     root->right = NULL;
-
+   
+    /*Here enter, check and read file*/
     FILE *file;
     file=fopen(argv[1],"r");
     char str[256];
@@ -144,6 +160,7 @@ int main(int argc, const char * argv[]) {
 
             for(i = 0; (str[i] != '\n') && ((str[i] < 'a') || (str[i] > 'z')); i++)
                 ;
+            /*Starts reading commands*/
             if (str[i] == 'i')
             {
                 inc(root);
